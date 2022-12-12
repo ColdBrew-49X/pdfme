@@ -45,6 +45,10 @@ const config = {
         use: 'ts-loader',
       },
       {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
+      {
         test: /\.(png|svg|ttf)$/i,
         use: ['url-loader'],
       },

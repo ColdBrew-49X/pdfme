@@ -81,11 +81,12 @@ export abstract class BaseUIClass {
 
     const { domContainer, template, options } = props;
     const { lang, font } = options || {};
-    this.domContainer = domContainer;
+    this.domContainer=domContainer as HTMLElement;
+
     this.template = generateColumnsAndSampledataIfNeeded(cloneDeep(template));
     this.size = {
       height: this.domContainer.clientHeight || window.innerHeight,
-      width: this.domContainer.clientWidth || window.innerWidth,
+      width: this.domContainer.clientWidth|| window.innerWidth,
     };
     this.resizeObserver.observe(this.domContainer);
 

@@ -68,6 +68,7 @@ class Designer extends BaseUIClass {
       </I18nContext.Provider>,
       this.domContainer
     );
+    console.log("Rendered");
   }
 }
 

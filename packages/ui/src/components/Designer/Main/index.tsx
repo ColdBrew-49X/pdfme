@@ -18,6 +18,7 @@ import Selecto from './Selecto';
 import Moveable from './Moveable';
 import Guides from './Guides';
 import Mask from './Mask';
+import Form from "./Form";
 
 const DELETE_BTN_ID = uuid();
 const fmt4Num = (prop: string) => Number(prop.replace('px', ''));
@@ -266,9 +267,11 @@ const Main = (props: Props, ref: Ref<HTMLDivElement>) => {
           onEdit(newActiveElements);
         }}
       />
+
+      <Form/>
       <Paper
         paperRefs={paperRefs}
-        scale={scale}
+        scale={scale/2}
         size={size}
         schemasList={schemasList}
         pageSizes={pageSizes}
