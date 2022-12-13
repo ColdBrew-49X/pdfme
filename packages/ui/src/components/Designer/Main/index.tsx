@@ -268,67 +268,78 @@ const Main = (props: Props, ref: Ref<HTMLDivElement>) => {
         }}
       />
 
-      <Form/>
-      <Paper
-        paperRefs={paperRefs}
-        scale={scale/2}
-        size={size}
-        schemasList={schemasList}
-        pageSizes={pageSizes}
-        backgrounds={backgrounds}
-        renderPaper={({ index, paperSize }) => (
-          <>
-            {!editing && activeElements.length > 0 && (
-              <DeleteButton activeElements={activeElements} />
+
+      <div style={{width: '70%',
+        overflow: "hidden"}}>
+        <div style={{width: '500px', float: 'left'}}> <Form/> </div>
+
+        <div style={{marginLeft:'600px'}}>
+        <Paper
+
+            paperRefs={paperRefs}
+            scale={scale}
+            size={{width:size.width/2, height:size.height/2}}
+            schemasList={schemasList}
+            pageSizes={pageSizes}
+            backgrounds={backgrounds}
+            renderPaper={({ index, paperSize }) => (
+                <>
+                  {!editing && activeElements.length > 0 && (
+                      <DeleteButton activeElements={activeElements} />
+                  )}
+                  <Guides
+                      paperSize={paperSize}
+                      horizontalRef={(e) => {
+                        if (e) {
+                          horizontalGuides.current[index] = e;
+                        }
+                      }}
+                      verticalRef={(e) => {
+                        if (e) {
+                          verticalGuides.current[index] = e;
+                        }
+                      }}
+                  />
+                  {pageCursor !== index ? (
+                      <Mask width={paperSize.width/2 + RULER_HEIGHT} height={paperSize.height} />
+                  ) : (
+                      !editing && (
+                          <Moveable
+                              ref={moveable}
+                              target={activeElements}
+                              bounds={{ left: 0, top: 0, bottom: paperSize.height, right: paperSize.width }}
+                              horizontalGuidelines={getGuideLines(horizontalGuides.current, index)}
+                              verticalGuidelines={getGuideLines(verticalGuides.current, index)}
+                              keepRatio={isPressShiftKey}
+                              onDrag={onDrag}
+                              onDragEnd={onDragEnd}
+                              onDragGroupEnd={onDragEnds}
+                              onResize={onResize}
+                              onResizeEnd={onResizeEnd}
+                              onResizeGroupEnd={onResizeEnds}
+                              onClick={onClickMoveable}
+                          />
+                      )
+                  )}
+                </>
             )}
-            <Guides
-              paperSize={paperSize}
-              horizontalRef={(e) => {
-                if (e) {
-                  horizontalGuides.current[index] = e;
-                }
-              }}
-              verticalRef={(e) => {
-                if (e) {
-                  verticalGuides.current[index] = e;
-                }
-              }}
-            />
-            {pageCursor !== index ? (
-              <Mask width={paperSize.width + RULER_HEIGHT} height={paperSize.height} />
-            ) : (
-              !editing && (
-                <Moveable
-                  ref={moveable}
-                  target={activeElements}
-                  bounds={{ left: 0, top: 0, bottom: paperSize.height, right: paperSize.width }}
-                  horizontalGuidelines={getGuideLines(horizontalGuides.current, index)}
-                  verticalGuidelines={getGuideLines(verticalGuides.current, index)}
-                  keepRatio={isPressShiftKey}
-                  onDrag={onDrag}
-                  onDragEnd={onDragEnd}
-                  onDragGroupEnd={onDragEnds}
-                  onResize={onResize}
-                  onResizeEnd={onResizeEnd}
-                  onResizeGroupEnd={onResizeEnds}
-                  onClick={onClickMoveable}
+            renderSchema={({ schema }) => (
+                <SchemaUI
+                    key={schema.id}
+                    schema={schema}
+                    onChangeHoveringSchemaId={onChangeHoveringSchemaId}
+                    editable={editing && activeElements.map((ae) => ae.id).includes(schema.id)}
+                    onChange={(value) => changeSchemas([{ key: 'data', value, schemaId: schema.id }])}
+                    border={hoveringSchemaId === schema.id ? '1px solid #18a0fb' : '1px dashed #4af'}
+                    ref={inputRef}
                 />
-              )
             )}
-          </>
-        )}
-        renderSchema={({ schema }) => (
-          <SchemaUI
-            key={schema.id}
-            schema={schema}
-            onChangeHoveringSchemaId={onChangeHoveringSchemaId}
-            editable={editing && activeElements.map((ae) => ae.id).includes(schema.id)}
-            onChange={(value) => changeSchemas([{ key: 'data', value, schemaId: schema.id }])}
-            border={hoveringSchemaId === schema.id ? '1px solid #18a0fb' : '1px dashed #4af'}
-            ref={inputRef}
-          />
-        )}
-      />
+        />
+    </div>
+
+
+      </div>
+
     </div>
   );
 };
