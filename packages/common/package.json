@@ -61,5 +61,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.0.1"
   }
 }

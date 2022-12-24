@@ -1,6 +1,6 @@
-import generate from './generate';
+import {generate,preprocess,generate_without_preprocessing} from './generate';
 
-export { generate };
+export { generate,preprocess,generate_without_preprocessing };
 
 export type {
   Lang,

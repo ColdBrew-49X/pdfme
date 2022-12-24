@@ -37,7 +37,7 @@ const postProcessing = (pdfDoc: PDFDocument) => {
   pdfDoc.setCreator(TOOL_NAME);
 };
 
-const generate = async (props: GenerateProps) => {
+export const generate = async (props: GenerateProps) => {
   checkGenerateProps(props);
   const { inputs, template, options = {} } = props;
   const { font = getDefaultFont(), splitThreshold = 3 } = options;
@@ -84,4 +84,57 @@ const generate = async (props: GenerateProps) => {
   return pdfDoc.save();
 };
 
-export default generate;
+export const generate_without_preprocessing = async (props: GenerateProps, preRes: any) => {
+  const { inputs, template, options = {} } = props;
+  const { font = getDefaultFont(), splitThreshold = 3 } = options;
+  const { schemas } = template;
+
+  const { pdfDoc, fontObj, fallbackFontName, embeddedPages, embedPdfBoxes } = preRes;
+
+  const inputImageCache: InputImageCache = {};
+  for (let i = 0; i < inputs.length; i += 1) {
+    const inputObj = inputs[i];
+    const keys = Object.keys(inputObj);
+    for (let j = 0; j < embeddedPages.length; j += 1) {
+      const embeddedPage = embeddedPages[j];
+      const { width: pageWidth, height: pageHeight } = embeddedPage;
+      const embedPdfBox = embedPdfBoxes[j];
+
+      const page = pdfDoc.addPage([pageWidth, pageHeight]);
+
+      drawEmbeddedPage({ page, embeddedPage, embedPdfBox });
+      for (let l = 0; l < keys.length; l += 1) {
+        const key = keys[l];
+        const schema = schemas[j];
+        const templateSchema = schema[key];
+        const input = inputObj[key];
+        const textSchemaSetting = { fontObj, fallbackFontName, splitThreshold };
+
+        // eslint-disable-next-line no-await-in-loop
+        await drawInputByTemplateSchema({
+          input,
+          templateSchema,
+          pdfDoc,
+          page,
+          pageHeight,
+          textSchemaSetting,
+          inputImageCache,
+        });
+      }
+    }
+  }
+
+  postProcessing(pdfDoc);
+
+  return pdfDoc.save();
+};
+
+export const preprocess = async (props: GenerateProps):Promise<any> => {
+  checkGenerateProps(props);
+  const { inputs, template, options = {} } = props;
+  const { font = getDefaultFont(), splitThreshold = 3 } = options;
+  const { schemas } = template;
+
+  const preRes = await preprocessing({ inputs, template, font });
+  return preRes;
+}
